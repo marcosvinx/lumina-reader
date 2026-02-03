@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { 
-  BookOpen, 
-  Settings, 
-  Download, 
-  Menu, 
-  X, 
-  Moon, 
-  Sun, 
-  Coffee, 
-  Type, 
-  MessageSquarePlus, 
+import {
+  BookOpen,
+  Settings,
+  Download,
+  Menu,
+  X,
+  Moon,
+  Sun,
+  Coffee,
+  Type,
+  MessageSquarePlus,
   Trash2,
   Eye,
   EyeOff,
@@ -18,33 +18,33 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
-import { 
-  BOOK_CONTENT, 
-  BOOK_TITLE, 
-  BOOK_AUTHOR, 
+import {
+  BOOK_CONTENT,
+  BOOK_TITLE,
+  BOOK_AUTHOR,
   BOOK_STRUCTURE,
-  HIGHLIGHT_COLORS, 
+  HIGHLIGHT_COLORS,
   THEME_CLASSES,
   FONT_SIZES,
   MAX_WIDTHS
 } from './constants';
-import { 
-  AppState, 
-  Highlight, 
-  Reflection, 
-  ThemeMode, 
-  HighlightColor, 
-  FontSize, 
-  MaxWidth 
+import {
+  AppState,
+  Highlight,
+  Reflection,
+  ThemeMode,
+  HighlightColor,
+  FontSize,
+  MaxWidth
 } from './types';
 import { useSelection } from './hooks/useSelection';
 
 // --- Helper Components ---
 
 const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ className, ...props }) => (
-  <button 
-    className={`p-2 rounded-full transition-colors duration-200 hover:bg-opacity-10 hover:bg-gray-500 ${className}`} 
-    {...props} 
+  <button
+    className={`p-2 rounded-full transition-colors duration-200 hover:bg-opacity-10 hover:bg-gray-500 ${className}`}
+    {...props}
   />
 );
 
@@ -62,7 +62,7 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  
+
   // Structure Accordion State
   const [openStructureItems, setOpenStructureItems] = useState<Record<number, boolean>>({});
 
@@ -84,13 +84,13 @@ export default function App() {
         if (parsed.theme) setTheme(parsed.theme);
         if (parsed.fontSize) setFontSize(parsed.fontSize);
         if (parsed.maxWidth) setMaxWidth(parsed.maxWidth);
-        
+
         // Restore scroll position after a short delay to allow rendering
         if (parsed.lastReadPosition) {
-           setTimeout(() => {
-             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-             window.scrollTo({ top: height * parsed.lastReadPosition, behavior: 'instant' });
-           }, 100);
+          setTimeout(() => {
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            window.scrollTo({ top: height * parsed.lastReadPosition, behavior: 'instant' });
+          }, 100);
         }
       } catch (e) {
         console.error("Failed to load saved data", e);
@@ -132,9 +132,9 @@ export default function App() {
   // Logic to add highlight
   const addHighlight = (color: HighlightColor) => {
     if (!selection || selection.paragraphIndex === null) return;
-    
+
     // Check if a highlight already exists for this exact selection
-    const existingIndex = highlights.findIndex(h => 
+    const existingIndex = highlights.findIndex(h =>
       h.paragraphIndex === selection.paragraphIndex &&
       h.startOffset === selection.startOffset &&
       h.endOffset === selection.endOffset
@@ -227,7 +227,7 @@ export default function App() {
   const getBlockType = (text: string): BlockType => {
     const t = text.trim();
     if (/^_{3,}$/.test(t)) return 'hr';
-    
+
     // Main Title inside content or Major Section Headers
     if (t.match(/^(INTRODUÇÃO\s—|PARTE [IVX]+|CAPÍTULO \d+|EPÍLOGO|EXTRA|DEDICATÓRIA|ENCERRAMENTO|🙏|🏰|🪨|📘)/i)) return 'h2';
 
@@ -243,7 +243,7 @@ export default function App() {
 
     // Quotes
     if ((t.startsWith('“') && t.endsWith('”')) || (t.startsWith('"') && t.endsWith('"'))) return 'quote';
-    
+
     return 'p';
   };
 
@@ -263,7 +263,7 @@ export default function App() {
       // Ensure we don't go backwards or duplicate text.
       // If highlights overlap, the later one starts after the previous one ends (visually).
       const start = Math.max(h.startOffset, lastIndex);
-      
+
       // If the highlight is completely engulfed by the previous one (start >= end), skip it.
       if (start >= h.endOffset) return;
 
@@ -273,17 +273,17 @@ export default function App() {
       }
 
       // Highlighted text
-      const highlightClasses = theme === 'dark' 
-        ? HIGHLIGHT_COLORS[h.color].darkBg 
+      const highlightClasses = theme === 'dark'
+        ? HIGHLIGHT_COLORS[h.color].darkBg
         : theme === 'sepia' ? HIGHLIGHT_COLORS[h.color].sepiaBg : HIGHLIGHT_COLORS[h.color].bg;
 
       segments.push(
-        <span 
-          key={h.id} 
+        <span
+          key={h.id}
           className={`${highlightClasses} cursor-pointer hover:underline decoration-dotted relative group rounded-sm px-0.5 box-decoration-clone animate-in fade-in duration-500`}
           onClick={(e) => {
-             e.stopPropagation();
-             removeHighlight(h.id); // Direct removal for better UX
+            e.stopPropagation();
+            removeHighlight(h.id); // Direct removal for better UX
           }}
           title="Clique para remover destaque"
         >
@@ -302,17 +302,17 @@ export default function App() {
     return segments;
   };
 
-  const themeClass = theme === 'sepia' ? 'bg-sepia-50 text-sepia-900' : 
-                     theme === 'dark' ? 'bg-dark-bg text-dark-text' : 
-                     'bg-white text-gray-800';
-  
+  const themeClass = theme === 'sepia' ? 'bg-sepia-50 text-sepia-900' :
+    theme === 'dark' ? 'bg-dark-bg text-dark-text' :
+      'bg-white text-gray-800';
+
   const navClass = theme === 'sepia' ? 'bg-sepia-50/95 border-sepia-200' :
-                   theme === 'dark' ? 'bg-dark-bg/95 border-gray-800' :
-                   'bg-white/95 border-gray-100';
+    theme === 'dark' ? 'bg-dark-bg/95 border-gray-800' :
+      'bg-white/95 border-gray-100';
 
   return (
     <div className={`min-h-screen transition-colors duration-300 font-serif ${themeClass} ${isFocusMode ? '' : 'pt-16'}`}>
-      
+
       {/* --- Progress Bar --- */}
       <div className="fixed top-0 left-0 h-1 bg-blue-600/80 z-50 transition-all duration-300" style={{ width: `${scrollProgress * 100}%` }} />
 
@@ -324,7 +324,7 @@ export default function App() {
               <Menu size={20} className="opacity-70 group-hover:opacity-100" />
               <span className="font-display font-semibold text-lg tracking-tight opacity-90 group-hover:opacity-100">{BOOK_TITLE}</span>
             </div>
-            
+
             <div className="flex items-center gap-1 md:gap-2">
               <Button onClick={() => setIsFocusMode(true)} title="Modo Foco">
                 <EyeOff size={18} />
@@ -332,67 +332,61 @@ export default function App() {
               <Button onClick={() => setIsSettingsOpen(!isSettingsOpen)} title="Configurações">
                 <Type size={18} />
               </Button>
-              <Button onClick={handleExport} title="Exportar Notas">
-                <Download size={18} />
-              </Button>
             </div>
           </div>
 
           {/* Settings Dropdown */}
           {isSettingsOpen && (
-             <div className={`absolute top-16 right-4 p-5 rounded-2xl shadow-2xl border w-72 animate-in fade-in slide-in-from-top-2 z-50 ${
-               theme === 'dark' ? 'bg-dark-surface border-gray-700' : 
-               theme === 'sepia' ? 'bg-sepia-100 border-sepia-200' : 'bg-white border-gray-100'
-             }`}>
-               <div className="space-y-6">
-                 <div>
-                   <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Tema</label>
-                   <div className="flex gap-2">
-                     <button onClick={() => setTheme('light')} className={`flex-1 h-10 rounded-lg border flex items-center justify-center transition-all ${theme === 'light' ? 'ring-2 ring-blue-500 border-transparent bg-gray-50' : 'border-gray-200 hover:bg-gray-50'}`}><Sun size={18} /></button>
-                     <button onClick={() => setTheme('sepia')} className={`flex-1 h-10 rounded-lg border flex items-center justify-center transition-all bg-[#fbf0d9] text-[#5f4b32] ${theme === 'sepia' ? 'ring-2 ring-blue-500 border-transparent' : 'border-[#efe0bc]'}`}><Coffee size={18} /></button>
-                     <button onClick={() => setTheme('dark')} className={`flex-1 h-10 rounded-lg border flex items-center justify-center transition-all bg-[#1a1a1a] text-gray-200 ${theme === 'dark' ? 'ring-2 ring-blue-500 border-transparent' : 'border-gray-700'}`}><Moon size={18} /></button>
-                   </div>
-                 </div>
-                 
-                 <div>
-                    <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Tamanho da Fonte</label>
-                    <div className="flex items-center justify-between bg-current/5 rounded-lg p-1">
-                      <button onClick={() => setFontSize('sm')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'sm' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-xs">A</span></button>
-                      <button onClick={() => setFontSize('base')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'base' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-sm">A</span></button>
-                      <button onClick={() => setFontSize('lg')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'lg' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-base">A</span></button>
-                      <button onClick={() => setFontSize('xl')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'xl' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-lg">A</span></button>
-                    </div>
-                 </div>
+            <div className={`absolute top-16 right-4 p-5 rounded-2xl shadow-2xl border w-72 animate-in fade-in slide-in-from-top-2 z-50 ${theme === 'dark' ? 'bg-dark-surface border-gray-700' :
+                theme === 'sepia' ? 'bg-sepia-100 border-sepia-200' : 'bg-white border-gray-100'
+              }`}>
+              <div className="space-y-6">
+                <div>
+                  <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Tema</label>
+                  <div className="flex gap-2">
+                    <button onClick={() => setTheme('light')} className={`flex-1 h-10 rounded-lg border flex items-center justify-center transition-all ${theme === 'light' ? 'ring-2 ring-blue-500 border-transparent bg-gray-50' : 'border-gray-200 hover:bg-gray-50'}`}><Sun size={18} /></button>
+                    <button onClick={() => setTheme('sepia')} className={`flex-1 h-10 rounded-lg border flex items-center justify-center transition-all bg-[#fbf0d9] text-[#5f4b32] ${theme === 'sepia' ? 'ring-2 ring-blue-500 border-transparent' : 'border-[#efe0bc]'}`}><Coffee size={18} /></button>
+                    <button onClick={() => setTheme('dark')} className={`flex-1 h-10 rounded-lg border flex items-center justify-center transition-all bg-[#1a1a1a] text-gray-200 ${theme === 'dark' ? 'ring-2 ring-blue-500 border-transparent' : 'border-gray-700'}`}><Moon size={18} /></button>
+                  </div>
+                </div>
 
-                 <div>
-                    <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Largura do Texto</label>
-                    <div className="flex gap-2">
-                      <button onClick={() => setMaxWidth('sm')} className={`flex-1 text-xs py-2 rounded-lg border transition-all ${maxWidth === 'sm' ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium' : 'border-current/20 opacity-60'}`}>Estreito</button>
-                      <button onClick={() => setMaxWidth('md')} className={`flex-1 text-xs py-2 rounded-lg border transition-all ${maxWidth === 'md' ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium' : 'border-current/20 opacity-60'}`}>Normal</button>
-                      <button onClick={() => setMaxWidth('lg')} className={`flex-1 text-xs py-2 rounded-lg border transition-all ${maxWidth === 'lg' ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium' : 'border-current/20 opacity-60'}`}>Largo</button>
-                    </div>
-                 </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Tamanho da Fonte</label>
+                  <div className="flex items-center justify-between bg-current/5 rounded-lg p-1">
+                    <button onClick={() => setFontSize('sm')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'sm' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-xs">A</span></button>
+                    <button onClick={() => setFontSize('base')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'base' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-sm">A</span></button>
+                    <button onClick={() => setFontSize('lg')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'lg' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-base">A</span></button>
+                    <button onClick={() => setFontSize('xl')} className={`w-8 h-8 flex items-center justify-center rounded transition-all ${fontSize === 'xl' ? 'bg-white/90 shadow-sm text-black' : 'opacity-60'}`}><span className="text-lg">A</span></button>
+                  </div>
+                </div>
 
-                 <div>
-                    <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Alinhamento</label>
-                    <div className="flex gap-2">
-                      <button onClick={() => setTextAlign('left')} className={`flex-1 p-2 rounded-lg border flex justify-center ${textAlign === 'left' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'border-current/20 opacity-60'}`}><AlignLeft size={18} /></button>
-                      <button onClick={() => setTextAlign('justify')} className={`flex-1 p-2 rounded-lg border flex justify-center ${textAlign === 'justify' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'border-current/20 opacity-60'}`}><AlignJustify size={18} /></button>
-                    </div>
-                 </div>
-               </div>
-             </div>
+                <div>
+                  <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Largura do Texto</label>
+                  <div className="flex gap-2">
+                    <button onClick={() => setMaxWidth('sm')} className={`flex-1 text-xs py-2 rounded-lg border transition-all ${maxWidth === 'sm' ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium' : 'border-current/20 opacity-60'}`}>Estreito</button>
+                    <button onClick={() => setMaxWidth('md')} className={`flex-1 text-xs py-2 rounded-lg border transition-all ${maxWidth === 'md' ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium' : 'border-current/20 opacity-60'}`}>Normal</button>
+                    <button onClick={() => setMaxWidth('lg')} className={`flex-1 text-xs py-2 rounded-lg border transition-all ${maxWidth === 'lg' ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium' : 'border-current/20 opacity-60'}`}>Largo</button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs uppercase tracking-widest opacity-50 font-sans font-bold mb-3 block">Alinhamento</label>
+                  <div className="flex gap-2">
+                    <button onClick={() => setTextAlign('left')} className={`flex-1 p-2 rounded-lg border flex justify-center ${textAlign === 'left' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'border-current/20 opacity-60'}`}><AlignLeft size={18} /></button>
+                    <button onClick={() => setTextAlign('justify')} className={`flex-1 p-2 rounded-lg border flex justify-center ${textAlign === 'justify' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'border-current/20 opacity-60'}`}><AlignJustify size={18} /></button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </nav>
       )}
 
       {/* --- Sidebar (My Journey) --- */}
-      <div className={`fixed inset-y-0 left-0 w-80 z-50 transform transition-transform duration-300 shadow-2xl overflow-y-auto ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } ${
-        theme === 'dark' ? 'bg-dark-surface border-r border-gray-800' : 
-        theme === 'sepia' ? 'bg-sepia-100 border-r border-sepia-200' : 'bg-gray-50 border-r border-gray-200'
-      }`}>
+      <div className={`fixed inset-y-0 left-0 w-80 z-50 transform transition-transform duration-300 shadow-2xl overflow-y-auto ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${theme === 'dark' ? 'bg-dark-surface border-r border-gray-800' :
+          theme === 'sepia' ? 'bg-sepia-100 border-r border-sepia-200' : 'bg-gray-50 border-r border-gray-200'
+        }`}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-display text-2xl font-semibold">Minha Jornada</h2>
@@ -400,83 +394,88 @@ export default function App() {
           </div>
 
           <div className="space-y-10">
-             {/* Highlights List */}
-             <div>
-               <h3 className="text-xs font-sans font-bold uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
-                 <BookOpen size={14} /> Destaques
-               </h3>
-               {highlights.length === 0 ? (
-                 <p className="text-sm opacity-50 italic pl-1">Você ainda não destacou nada.</p>
-               ) : (
-                 <div className="space-y-4">
-                   {highlights.map(h => (
-                     <div 
-                       key={h.id} 
-                       onClick={() => {
-                         setIsSidebarOpen(false);
-                         document.getElementById(`para-${h.paragraphIndex}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                       }}
-                       className={`p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-95 text-sm leading-relaxed border-l-[3px] shadow-sm ${
-                         theme === 'dark' ? 'bg-gray-800/50 hover:bg-gray-800' : 
-                         theme === 'sepia' ? 'bg-white/40 hover:bg-white/60' : 'bg-white hover:shadow-md'
-                       }`}
-                       style={{ borderLeftColor: h.color === 'yellow' ? '#facc15' : h.color === 'blue' ? '#60a5fa' : h.color === 'green' ? '#4ade80' : '#c084fc' }}
-                     >
-                       <p className="font-serif opacity-90 line-clamp-3">"{h.text}"</p>
-                       <p className="text-[10px] uppercase tracking-wider opacity-40 mt-2 font-sans">{new Date(h.createdAt).toLocaleDateString()}</p>
-                     </div>
-                   ))}
-                 </div>
-               )}
-             </div>
+            {/* Highlights List */}
+            <div>
+              <h3 className="text-xs font-sans font-bold uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
+                <BookOpen size={14} /> Destaques
+              </h3>
+              {highlights.length === 0 ? (
+                <p className="text-sm opacity-50 italic pl-1">Você ainda não destacou nada.</p>
+              ) : (
+                <div className="space-y-4">
+                  {highlights.map(h => (
+                    <div
+                      key={h.id}
+                      onClick={() => {
+                        setIsSidebarOpen(false);
+                        document.getElementById(`para-${h.paragraphIndex}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }}
+                      className={`p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-95 text-sm leading-relaxed border-l-[3px] shadow-sm ${theme === 'dark' ? 'bg-gray-800/50 hover:bg-gray-800' :
+                          theme === 'sepia' ? 'bg-white/40 hover:bg-white/60' : 'bg-white hover:shadow-md'
+                        }`}
+                      style={{ borderLeftColor: h.color === 'yellow' ? '#facc15' : h.color === 'blue' ? '#60a5fa' : h.color === 'green' ? '#4ade80' : '#c084fc' }}
+                    >
+                      <p className="font-serif opacity-90 line-clamp-3">"{h.text}"</p>
+                      <p className="text-[10px] uppercase tracking-wider opacity-40 mt-2 font-sans">{new Date(h.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-             {/* Reflections List */}
-             <div>
-               <h3 className="text-xs font-sans font-bold uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
-                 <MessageSquarePlus size={14} /> Reflexões
-               </h3>
-               {reflections.length === 0 ? (
-                 <p className="text-sm opacity-50 italic pl-1">Nenhuma reflexão salva.</p>
-               ) : (
-                 <div className="space-y-4">
-                   {reflections.map(r => (
-                     <div 
-                       key={r.id}
-                       onClick={() => {
+            {/* Reflections List */}
+            <div>
+              <h3 className="text-xs font-sans font-bold uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
+                <MessageSquarePlus size={14} /> Reflexões
+              </h3>
+              {reflections.length === 0 ? (
+                <p className="text-sm opacity-50 italic pl-1">Nenhuma reflexão salva.</p>
+              ) : (
+                <div className="space-y-4">
+                  {reflections.map(r => (
+                    <div
+                      key={r.id}
+                      onClick={() => {
                         setIsSidebarOpen(false);
                         document.getElementById(`para-${r.paragraphIndex}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                       }}
-                       className={`p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.02] text-sm relative group border ${
-                        theme === 'dark' ? 'bg-gray-800/30 border-gray-700' : 
-                        theme === 'sepia' ? 'bg-white/30 border-sepia-200' : 'bg-white border-gray-100 shadow-sm'
-                       }`}
-                     >
-                       <span className="font-bold font-sans uppercase tracking-wider text-[10px] opacity-40 block mb-2">Trecho {r.paragraphIndex + 1}</span>
-                       <p className="font-serif italic opacity-90">{r.text}</p>
-                       <button 
+                      className={`p-4 rounded-lg cursor-pointer transition-all hover:scale-[1.02] text-sm relative group border ${theme === 'dark' ? 'bg-gray-800/30 border-gray-700' :
+                          theme === 'sepia' ? 'bg-white/30 border-sepia-200' : 'bg-white border-gray-100 shadow-sm'
+                        }`}
+                    >
+                      <span className="font-bold font-sans uppercase tracking-wider text-[10px] opacity-40 block mb-2">Trecho {r.paragraphIndex + 1}</span>
+                      <p className="font-serif italic opacity-90">{r.text}</p>
+                      <button
                         onClick={(e) => { e.stopPropagation(); deleteReflection(r.id); }}
                         className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
-                       >
-                         <Trash2 size={12} />
-                       </button>
-                     </div>
-                   ))}
-                 </div>
-               )}
-             </div>
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-      
+
       {/* Overlay for sidebar */}
       {isSidebarOpen && <div className="fixed inset-0 bg-black/40 z-40 backdrop-blur-[2px] transition-opacity" onClick={() => setIsSidebarOpen(false)} />}
 
       {/* --- Main Reader Content --- */}
-      <main 
-        className={`mx-auto px-6 pb-32 transition-all duration-300 ${MAX_WIDTHS[maxWidth]} ${FONT_SIZES[fontSize]}`} 
+      <main
+        className={`mx-auto px-6 pb-32 transition-all duration-300 ${MAX_WIDTHS[maxWidth]} ${FONT_SIZES[fontSize]}`}
         ref={contentRef}
       >
         <header className="pt-24 pb-16 text-center mb-4 select-none">
+          <div className="flex justify-center mb-8">
+            <img
+              src="./book-cover.png"
+              alt="Capa do Livro"
+              className="w-48 md:w-56 shadow-2xl rounded-lg transform hover:scale-[1.02] transition-transform duration-500"
+            />
+          </div>
           <p className="font-sans uppercase tracking-[0.2em] text-xs font-bold opacity-50 mb-6">eBook Interativo</p>
           <h1 className="text-4xl md:text-6xl font-display font-bold mb-6 leading-[1.1] tracking-tight text-balance">{BOOK_TITLE}</h1>
           <div className="flex items-center justify-center gap-2 opacity-60 font-serif italic">
@@ -488,14 +487,13 @@ export default function App() {
         {/* --- Collapsible Structure / Table of Contents --- */}
         <div className="max-w-xl mx-auto mb-16 space-y-3">
           {BOOK_STRUCTURE.map((section, index) => (
-            <div 
-              key={index} 
-              className={`border rounded-lg overflow-hidden transition-all duration-300 ${
-                theme === 'dark' ? 'border-gray-800 bg-gray-900/50' : 
-                theme === 'sepia' ? 'border-sepia-200 bg-sepia-100/50' : 'border-gray-100 bg-gray-50/50'
-              }`}
+            <div
+              key={index}
+              className={`border rounded-lg overflow-hidden transition-all duration-300 ${theme === 'dark' ? 'border-gray-800 bg-gray-900/50' :
+                  theme === 'sepia' ? 'border-sepia-200 bg-sepia-100/50' : 'border-gray-100 bg-gray-50/50'
+                }`}
             >
-              <button 
+              <button
                 onClick={() => toggleStructureItem(index)}
                 className="w-full px-5 py-4 flex items-center justify-between text-left group"
               >
@@ -504,15 +502,13 @@ export default function App() {
                 </span>
                 {openStructureItems[index] ? <ChevronUp size={16} className="opacity-50" /> : <ChevronDown size={16} className="opacity-50" />}
               </button>
-              
-              <div 
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  openStructureItems[index] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                }`}
+
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${openStructureItems[index] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
               >
-                <div className={`px-5 pb-5 pt-0 text-sm opacity-70 space-y-2 leading-relaxed ${
-                   section.items.length === 0 ? 'italic opacity-50' : ''
-                }`}>
+                <div className={`px-5 pb-5 pt-0 text-sm opacity-70 space-y-2 leading-relaxed ${section.items.length === 0 ? 'italic opacity-50' : ''
+                  }`}>
                   {section.items.length > 0 ? (
                     <ul className="space-y-2">
                       {section.items.map((item, i) => (
@@ -534,10 +530,10 @@ export default function App() {
         {paragraphs.map((para, index) => {
           const paraReflections = reflections.filter(r => r.paragraphIndex === index);
           const blockType = getBlockType(para);
-          
+
           return (
             <div key={index} id={`para-${index}`} className="group relative" data-paragraph-index={index}>
-              
+
               {/* Content Rendered based on Block Type */}
               {blockType === 'h2' && (
                 <div className="mt-24 mb-10 text-center">
@@ -564,9 +560,9 @@ export default function App() {
 
               {blockType === 'list' && (
                 <div className={`mb-4 pl-4 leading-relaxed opacity-90 ${textAlign === 'justify' ? 'text-justify' : 'text-left'}`}>
-                   <ul className="book-list text-current">
-                     <li>{renderText(para.replace(/^[\*•-]\s/, ''), index)}</li>
-                   </ul>
+                  <ul className="book-list text-current">
+                    <li>{renderText(para.replace(/^[\*•-]\s/, ''), index)}</li>
+                  </ul>
                 </div>
               )}
 
@@ -581,26 +577,26 @@ export default function App() {
                   {renderText(para, index)}
                 </p>
               )}
-              
+
               {/* Paragraph Action: Add Reflection (Only for text-heavy blocks) */}
               {['p', 'quote', 'list'].includes(blockType) && (
                 <>
                   <div className="absolute -right-16 top-0 h-full opacity-0 group-hover:opacity-100 transition-opacity hidden xl:flex items-start pt-1.5">
-                     <button 
-                       onClick={() => setActiveReflectionInput(activeReflectionInput === index ? null : index)}
-                       className="p-2.5 text-current opacity-20 hover:opacity-100 hover:bg-current/5 rounded-full transition-all"
-                       title="Adicionar Reflexão"
-                     >
-                       <MessageSquarePlus size={18} />
-                     </button>
+                    <button
+                      onClick={() => setActiveReflectionInput(activeReflectionInput === index ? null : index)}
+                      className="p-2.5 text-current opacity-20 hover:opacity-100 hover:bg-current/5 rounded-full transition-all"
+                      title="Adicionar Reflexão"
+                    >
+                      <MessageSquarePlus size={18} />
+                    </button>
                   </div>
 
                   <div className="xl:hidden mt-1 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity mb-4">
-                    <button 
-                       onClick={() => setActiveReflectionInput(activeReflectionInput === index ? null : index)}
-                       className="text-[10px] uppercase font-bold tracking-wider opacity-40 flex items-center gap-1 py-1 px-2 rounded hover:bg-current/5"
+                    <button
+                      onClick={() => setActiveReflectionInput(activeReflectionInput === index ? null : index)}
+                      className="text-[10px] uppercase font-bold tracking-wider opacity-40 flex items-center gap-1 py-1 px-2 rounded hover:bg-current/5"
                     >
-                       <MessageSquarePlus size={12} /> Nota
+                      <MessageSquarePlus size={12} /> Nota
                     </button>
                   </div>
                 </>
@@ -608,13 +604,12 @@ export default function App() {
 
               {/* Reflection Input Area */}
               {activeReflectionInput === index && (
-                <div className={`my-6 p-5 rounded-xl animate-in fade-in slide-in-from-top-2 border shadow-lg ${
-                  theme === 'dark' ? 'bg-gray-800 border-gray-700' : 
-                  theme === 'sepia' ? 'bg-[#fffbf0] border-sepia-200' : 'bg-white border-gray-100'
-                }`}>
+                <div className={`my-6 p-5 rounded-xl animate-in fade-in slide-in-from-top-2 border shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-700' :
+                    theme === 'sepia' ? 'bg-[#fffbf0] border-sepia-200' : 'bg-white border-gray-100'
+                  }`}>
                   <label className="text-[10px] uppercase tracking-widest font-bold opacity-40 mb-2 block">Sua Reflexão</label>
-                  <textarea 
-                    className="w-full bg-transparent border-none resize-none focus:ring-0 text-base font-serif p-0 placeholder-current placeholder-opacity-30 leading-relaxed" 
+                  <textarea
+                    className="w-full bg-transparent border-none resize-none focus:ring-0 text-base font-serif p-0 placeholder-current placeholder-opacity-30 leading-relaxed"
                     placeholder="O que este trecho te fez pensar?"
                     rows={3}
                     autoFocus
@@ -633,8 +628,8 @@ export default function App() {
                 <div className="my-6 space-y-3 pl-6 border-l-2 border-purple-400/30">
                   {paraReflections.map(r => (
                     <div key={r.id} className="text-base font-serif italic opacity-75 flex justify-between group/note items-start animate-in fade-in slide-in-from-left-2 duration-500">
-                       <span className="leading-relaxed">"{r.text}"</span>
-                       <button onClick={() => deleteReflection(r.id)} className="opacity-0 group-hover/note:opacity-40 hover:text-red-500 ml-2 mt-1 transition-opacity"><X size={14}/></button>
+                      <span className="leading-relaxed">"{r.text}"</span>
+                      <button onClick={() => deleteReflection(r.id)} className="opacity-0 group-hover/note:opacity-40 hover:text-red-500 ml-2 mt-1 transition-opacity"><X size={14} /></button>
                     </div>
                   ))}
                 </div>
@@ -642,7 +637,7 @@ export default function App() {
             </div>
           );
         })}
-        
+
         <div className="mt-32 pt-16 border-t border-current border-opacity-10 text-center opacity-40 font-sans text-xs uppercase tracking-widest">
           <p className="mb-8">Fim do Livro</p>
           <Button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="mx-auto block">Voltar ao Topo</Button>
@@ -651,7 +646,7 @@ export default function App() {
 
       {/* --- Floating Highlight Menu --- */}
       {selection && !isFocusMode && (
-        <div 
+        <div
           className="fixed z-50 flex items-center gap-1.5 p-1.5 rounded-full shadow-2xl animate-in zoom-in-95 duration-200 border border-black/5"
           style={{
             top: `${(selection.rect?.top || 0) + window.scrollY - 70}px`,
@@ -677,7 +672,7 @@ export default function App() {
 
       {/* --- Exit Focus Mode Button --- */}
       {isFocusMode && (
-        <button 
+        <button
           onClick={() => setIsFocusMode(false)}
           className="fixed bottom-8 right-8 p-4 bg-white/10 backdrop-blur text-current border border-current/10 rounded-full shadow-2xl hover:bg-white/20 transition-all hover:scale-105 z-50 group"
           title="Sair do Modo Foco"
