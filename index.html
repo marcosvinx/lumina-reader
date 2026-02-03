@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Lumina Reader</title>
+
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lumina Reader">
+  <link rel="apple-touch-icon" href="/icons/icon-512.png">
+  <meta name="theme-color" content="#1a1a1a">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Merriweather"', 'serif'],
+            sans: ['"Inter"', 'sans-serif'],
+            display: ['"Crimson Pro"', 'serif'],
+          },
+          colors: {
+            sepia: {
+              50: '#fbf0d9',
+              100: '#f7e8c6',
+              200: '#efe0bc',
+              800: '#5f4b32',
+              900: '#463625',
+            },
+            dark: {
+              bg: '#1a1a1a',
+              text: '#d4d4d4',
+              surface: '#262626'
+            }
+          },
+          typography: (theme) => ({
+            DEFAULT: {
+              css: {
+                color: theme('colors.gray.800'),
+              },
+            },
+          }),
+        }
+      }
+    }
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    ::selection {
+      background-color: rgba(147, 197, 253, 0.3);
+    }
+
+    ul.book-list {
+      list-style-type: none;
+      padding-left: 1.5em;
+    }
+
+    ul.book-list li {
+      position: relative;
+      margin-bottom: 0.5em;
+    }
+
+    ul.book-list li::before {
+      content: '•';
+      position: absolute;
+      left: -1em;
+      color: currentColor;
+      opacity: 0.6;
+    }
+
+    #root {
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Safe area insets para iPhones com notch */
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+  }
+}
+</script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+
+<body class="bg-[#1a1a1a]">
+  <div id="root">
+    <div
+      style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Inter', sans-serif; color: #d4d4d4;">
+      <div style="text-align: center;">
+        <h2 style="font-size: 24px; margin-bottom: 8px;">Lumina Reader</h2>
+        <p style="opacity: 0.6;">Iniciando sua leitura...</p>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/index.tsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW reg error:', err));
+      });
+    }
+  </script>
+</body>
+
+</html>
