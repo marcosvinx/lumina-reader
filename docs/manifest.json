@@ -1,0 +1,17 @@
+{
+    "name": "Lumina Reader",
+    "short_name": "Lumina",
+    "description": "Seu leitor de eBooks interativo e personalizado.",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#1a1a1a",
+    "theme_color": "#1a1a1a",
+    "icons": [
+        {
+            "src": "icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
